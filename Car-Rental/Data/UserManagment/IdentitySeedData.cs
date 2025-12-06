@@ -28,7 +28,7 @@ namespace Car_Rental.Data.UserManagment
 
             
             var adminEmail = configuration["AdminUser:Email"] ?? "admin@carrental.local";
-            var adminPassword = configuration["AdminUser:Password"] ?? "Admin123!";
+            var adminPassword = configuration["AdminUser:Password"] ?? "Admin123";
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
