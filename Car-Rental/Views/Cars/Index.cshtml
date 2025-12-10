@@ -104,6 +104,20 @@ else
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
                 </td>
+                    <td>
+                        @if (item.Status == Car_Rental.Models.Enums.CarStatus.Available)
+                        {
+                            <span class="badge-status badge-status-available">Available</span>
+                        }
+                        else if (item.Status == Car_Rental.Models.Enums.CarStatus.Rented)
+                        {
+                            <span class="badge-status badge-status-rented">Rented</span>
+                        }
+                        else if (item.Status == Car_Rental.Models.Enums.CarStatus.Maintenance)
+                        {
+                            <span class="badge-status badge-status-maintenance">Maintenance</span>
+                        }
+                    </td>
             </tr>
         }
         </tbody>

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarRental.Web.Controllers
+namespace Car_Rental.Controllers
 {
     public class CarsController : Controller
     {

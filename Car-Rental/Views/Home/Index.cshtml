@@ -1,8 +1,101 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome";
+    bool isLoggedIn = User.Identity?.IsAuthenticated == true;
+    bool isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("Staff");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <h1 class="hero-title">Smart car rental management.</h1>
+            <p class="hero-subtitle">
+                Manage your fleet, track rentals, and keep customers happy — all in one place.
+                Built with ASP.NET Core MVC, EF Core, and Identity.
+            </p>
+
+            <div class="hero-actions">
+                <a asp-controller="Cars" asp-action="Index" class="btn btn-light me-2">
+                    Browse cars
+                </a>
+
+                @if (isLoggedIn)
+                {
+                    <a asp-controller="Rentals" asp-action="Index" class="btn btn-outline-light">
+                        View my rentals
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light">
+                        Sign in to rent
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card card-elevated h-100">
+            <div class="card-body">
+                <h5 class="card-title">Fleet management</h5>
+                <p class="card-text">
+                    Add, edit, and organize your cars by category, price, and status.
+                    Keep track of which vehicles are available, rented, or under maintenance.
+                </p>
+                <a asp-controller="Cars" asp-action="Index" class="btn btn-sm btn-primary">
+                    Go to cars
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-elevated h-100">
+            <div class="card-body">
+                <h5 class="card-title">Rental workflow</h5>
+                <p class="card-text">
+                    Let users rent available cars, prevent overlapping bookings, and manage returns.
+                    All backed by ASP.NET Core Identity.
+                </p>
+                @if (isLoggedIn)
+                {
+                    <a asp-controller="Rentals" asp-action="Index" class="btn btn-sm btn-primary">
+                        View rentals
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-sm btn-primary">
+                        Create an account
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-elevated h-100">
+            <div class="card-body">
+                <h5 class="card-title">Admin dashboard</h5>
+                <p class="card-text">
+                    Get an overview of active rentals, fleet status, and total revenue.
+                    Designed for admins and staff to stay on top of the business.
+                </p>
+                @if (isAdminOrStaff)
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="btn btn-sm btn-primary">
+                        Open dashboard
+                    </a>
+                }
+                else
+                {
+                    <span class="text-muted small">
+                        Dashboard available for Admin / Staff roles.
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
 </div>
