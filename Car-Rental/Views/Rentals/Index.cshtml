@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Car_Rental.Models.Rental>
+
+@{
+    ViewData["Title"] = "Rentals";
+    bool isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("Staff");
+}
+
+<h1>Rentals</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Car</th>
+            <th>Customer</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Total price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Car.Brand @item.Car.Model (@item.Car.Year)</td>
+                <td>
+                    @if (isAdminOrStaff)
+                    {
+                        @item.User?.Email
+                    }
+                    else
+                    {
+                        @:You
+                    }
+                </td>
+                <td>@item.StartDate.ToShortDateString()</td>
+                <td>@item.EndDate.ToShortDateString()</td>
+                <td>@item.Status</td>
+                <td>@item.TotalPrice.ToString("C")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    @if (isAdminOrStaff && item.Status == Car_Rental.Models.Enums.RentalStatus.Active)
+                    {
+                        @: |
+                        <a asp-action="Return" asp-route-id="@item.Id">Return</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

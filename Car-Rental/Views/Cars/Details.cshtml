@@ -1,60 +1,52 @@
 ﻿@model Car_Rental.Models.Car
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Car Details";
 }
 
-<h1>Details</h1>
+<h1>Car Details</h1>
 
 <div>
-    <h4>Car</h4>
+    <h4>@Model.Brand @Model.Model (@Model.Year)</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Year)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Year)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DailyRate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DailyRate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileName)
-        </dd>
-    </dl>
+    <div class="row">
+        <div class="col-md-4">
+            @if (!string.IsNullOrEmpty(Model.ImageFileName))
+            {
+                <img src="~/images/cars/@Model.ImageFileName" alt="Car image" style="max-width:100%;" />
+            }
+        </div>
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Model.Category</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">@Model.Status</dd>
+
+                <dt class="col-sm-3">Daily rate</dt>
+                <dd class="col-sm-9">@Model.DailyRate.ToString("C")</dd>
+            </dl>
+        </div>
+    </div>
 </div>
-<div>
-    @* <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> | *@
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Back to list</a>
+
+    @if (User.Identity?.IsAuthenticated == true && Model.Status == Car_Rental.Models.Enums.CarStatus.Available)
+    {
+        <a asp-controller="Rentals"
+           asp-action="Create"
+           asp-route-carId="@Model.Id"
+           class="btn btn-primary ms-2">
+            Rent this car
+        </a>
+    }
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning ms-2">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger ms-2">Delete</a>
+    }
+</p>

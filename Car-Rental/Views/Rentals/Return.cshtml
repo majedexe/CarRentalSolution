@@ -1,0 +1,30 @@
+﻿@model Car_Rental.Models.Rental
+
+@{
+    ViewData["Title"] = "Return Rental";
+}
+
+<h1>Return Rental</h1>
+
+<h4>Car: @Model.Car.Brand @Model.Car.Model (@Model.Car.Year)</h4>
+<h5>Customer: @Model.User?.Email</h5>
+
+<hr />
+
+<form asp-action="Return" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group mb-3">
+        <label>Car status after return</label>
+        <select name="carStatusAfterReturn" class="form-control">
+            <option value="1">Available</option>
+            <option value="3">Maintenance</option>
+        </select>
+        <small class="form-text text-muted">
+            Choose Maintenance if the car needs inspection or repair.
+        </small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Confirm Return</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary ms-2">Cancel</a>
+</form>

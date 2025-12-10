@@ -59,7 +59,6 @@ namespace Car_Rental.Controllers
 
             if (rental == null) return NotFound();
 
-            // Normal users can only see their own rentals
             if (!User.IsInRole("Admin") && !User.IsInRole("Staff"))
             {
                 var userId = _userManager.GetUserId(User);
@@ -141,7 +140,6 @@ namespace Car_Rental.Controllers
 
             _context.Rentals.Add(rental);
 
-            // Mark car as rented
             car.Status = CarStatus.Rented;
             _context.Cars.Update(car);
 

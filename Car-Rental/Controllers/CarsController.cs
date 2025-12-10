@@ -1,5 +1,4 @@
-﻿// File: Controllers/CarsController.cs
-using Car_Rental.Data;
+﻿using Car_Rental.Data;
 using Car_Rental.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;

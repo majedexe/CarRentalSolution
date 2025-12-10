@@ -45,12 +45,19 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a>
 
+                    @if (User.Identity?.IsAuthenticated == true &&
+                                    item.Status == Car_Rental.Models.Enums.CarStatus.Available)
+                    {
+                        @: |
+                        <a asp-controller="Rentals" asp-action="Create" asp-route-carId="@item.Id">Rent</a>
+                    }
+
                     @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                     {
-                        <text>
-                            | <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                            | <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                        </text>
+                        @: |
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        @: |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
                 </td>
             </tr>
