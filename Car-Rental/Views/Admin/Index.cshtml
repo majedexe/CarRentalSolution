@@ -1,0 +1,51 @@
+﻿@model Car_Rental.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                Cars
+            </div>
+            <div class="card-body">
+                <p>Total cars: <strong>@Model.TotalCars</strong></p>
+                <p>Available: <strong>@Model.AvailableCars</strong></p>
+                <p>Rented: <strong>@Model.RentedCars</strong></p>
+                <p>Maintenance: <strong>@Model.MaintenanceCars</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                Rentals
+            </div>
+            <div class="card-body">
+                <p>Active rentals: <strong>@Model.ActiveRentals</strong></p>
+                <p>Completed rentals: <strong>@Model.CompletedRentals</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                Revenue
+            </div>
+            <div class="card-body">
+                <p>Total revenue (completed rentals): <strong>@Model.TotalRevenue.ToString("C")</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p>
+    <a asp-controller="Cars" asp-action="Index" class="btn btn-primary">Manage Cars</a>
+    <a asp-controller="Rentals" asp-action="Index" class="btn btn-secondary ms-2">View Rentals</a>
+</p>
