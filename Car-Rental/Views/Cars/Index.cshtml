@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Car_Rental.Models.Car>
+﻿@model Car_Rental.Models.ViewModels.CarIndexViewModel
 
 @{
     ViewData["Title"] = "Cars";
@@ -6,28 +6,72 @@
 
 <h1>Cars</h1>
 
+<form method="get" class="row mb-3">
+    <div class="col-md-4">
+        <label class="form-label">Search (Make or Model)</label>
+        <input type="text" name="searchString" value="@Model.SearchString" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-control">
+            <option value="">All</option>
+            @foreach (Car_Rental.Models.Enums.CarCategory cat
+                        in Enum.GetValues(typeof(Car_Rental.Models.Enums.CarCategory)))
+            {
+                <option value="@((int)cat)"
+                        selected="@(Model.Category == cat ? "selected" : null)">
+                    @cat
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-control">
+            <option value="">All</option>
+            @foreach (Car_Rental.Models.Enums.CarStatus st
+                        in Enum.GetValues(typeof(Car_Rental.Models.Enums.CarStatus)))
+            {
+                <option value="@((int)st)"
+                        selected="@(Model.Status == st ? "selected" : null)">
+                    @st
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+</form>
+
 <p>
     @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
     {
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
     }
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Image</th>
-            <th>@Html.DisplayNameFor(model => model.First().Brand)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Model)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Year)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Category)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Status)</th>
-            <th>@Html.DisplayNameFor(model => model.First().DailyRate)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+@if (!Model.Cars.Any())
+{
+    <p>No cars found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Daily rate</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Cars)
         {
             <tr>
                 <td>
@@ -36,17 +80,17 @@
                         <img src="~/images/cars/@item.ImageFileName" alt="Car image" style="max-width:100px;" />
                     }
                 </td>
-                <td>@Html.DisplayFor(modelItem => item.Brand)</td>
-                <td>@Html.DisplayFor(modelItem => item.Model)</td>
-                <td>@Html.DisplayFor(modelItem => item.Year)</td>
-                <td>@Html.DisplayFor(modelItem => item.Category)</td>
-                <td>@Html.DisplayFor(modelItem => item.Status)</td>
-                <td>@Html.DisplayFor(modelItem => item.DailyRate)</td>
+                <td>@item.Brand</td>
+                <td>@item.Model</td>
+                <td>@item.Year</td>
+                <td>@item.Category</td>
+                <td>@item.Status</td>
+                <td>@item.DailyRate.ToString("C")</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a>
 
                     @if (User.Identity?.IsAuthenticated == true &&
-                                    item.Status == Car_Rental.Models.Enums.CarStatus.Available)
+                                        item.Status == Car_Rental.Models.Enums.CarStatus.Available)
                     {
                         @: |
                         <a asp-controller="Rentals" asp-action="Create" asp-route-carId="@item.Id">Rent</a>
@@ -62,5 +106,52 @@
                 </td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+
+    <nav aria-label="Car pagination">
+        <ul class="pagination">
+            @if (Model.Page > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(Model.Page - 1)"
+                       asp-route-searchString="@Model.SearchString"
+                       asp-route-category="@(Model.Category.HasValue ? (int?)Model.Category.Value : null)"
+                       asp-route-status="@(Model.Status.HasValue ? (int?)Model.Status.Value : null)">
+                        Previous
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchString="@Model.SearchString"
+                       asp-route-category="@(Model.Category.HasValue ? (int?)Model.Category.Value : null)"
+                       asp-route-status="@(Model.Status.HasValue ? (int?)Model.Status.Value : null)">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (Model.Page < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(Model.Page + 1)"
+                       asp-route-searchString="@Model.SearchString"
+                       asp-route-category="@(Model.Category.HasValue ? (int?)Model.Category.Value : null)"
+                       asp-route-status="@(Model.Status.HasValue ? (int?)Model.Status.Value : null)">
+                        Next
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

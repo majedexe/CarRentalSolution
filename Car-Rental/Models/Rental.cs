@@ -20,12 +20,12 @@ namespace Car_Rental.Models
 
         public IdentityUser User { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "Start date is required.")]
         [Display(Name = "Start date")]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "End date is required.")]
         [Display(Name = "End date")]
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
@@ -39,5 +39,15 @@ namespace Car_Rental.Models
 
         [Display(Name = "Created at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (EndDate <= StartDate)
+            {
+                yield return new ValidationResult(
+                    "End date must be after start date.",
+                    new[] { nameof(EndDate) });
+            }
+        }
     }
 }

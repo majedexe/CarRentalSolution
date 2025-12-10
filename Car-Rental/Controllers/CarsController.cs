@@ -1,13 +1,10 @@
 ﻿using Car_Rental.Data;
 using Car_Rental.Models;
+using Car_Rental.Models.Enums;
+using Car_Rental.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CarRental.Web.Controllers
 {
@@ -22,10 +19,54 @@ namespace CarRental.Web.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? searchString,
+            CarCategory? category,
+            CarStatus? status,
+            int page = 1,
+            int pageSize = 5)
         {
-            var cars = await _context.Cars.ToListAsync();
-            return View(cars);
+            var query = _context.Cars.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                query = query.Where(c =>
+                    c.Brand.Contains(searchString) ||
+                    c.Model.Contains(searchString));
+            }
+
+            if (category.HasValue)
+            {
+                query = query.Where(c => c.Category == category.Value);
+            }
+
+            if (status.HasValue)
+            {
+                query = query.Where(c => c.Status == status.Value);
+            }
+
+            var totalItems = await query.CountAsync();
+
+            if (page < 1) page = 1;
+            var cars = await query
+                .OrderBy(c => c.Brand)
+                .ThenBy(c => c.Model)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var viewModel = new CarIndexViewModel
+            {
+                Cars = cars,
+                SearchString = searchString,
+                Category = category,
+                Status = status,
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -45,15 +86,12 @@ namespace CarRental.Web.Controllers
             return View(car);
         }
 
-        // GET: Cars/Create
-        // Only Admin and Staff can create cars
         [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             return View();
         }
 
-       
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Staff")]
