@@ -12,11 +12,13 @@ namespace Car_Rental.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<CarsController> _logger;
 
-        public CarsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public CarsController(ApplicationDbContext context,IWebHostEnvironment webHostEnvironment,ILogger<CarsController> logger)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(
@@ -116,10 +118,11 @@ namespace Car_Rental.Controllers
 
                     car.ImageFileName = uniqueFileName;
                 }
-
+                _logger.LogInformation("Creating car {@Car}", car);
                 _context.Add(car);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+
             }
             return View(car);
         }
@@ -185,7 +188,7 @@ namespace Car_Rental.Controllers
                     {
                         car.ImageFileName = existingCar.ImageFileName;
                     }
-
+                    _logger.LogInformation("Editing car {@Car}", car);
                     _context.Update(car);
                     await _context.SaveChangesAsync();
                 }
@@ -233,7 +236,7 @@ namespace Car_Rental.Controllers
             {
                 _context.Cars.Remove(car);
             }
-
+            _logger.LogInformation("Deleting car {@Car}", car);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

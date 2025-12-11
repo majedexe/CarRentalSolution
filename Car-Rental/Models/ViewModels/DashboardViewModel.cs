@@ -6,10 +6,9 @@
         public int AvailableCars { get; set; }
         public int RentedCars { get; set; }
         public int MaintenanceCars { get; set; }
-
         public int ActiveRentals { get; set; }
         public int CompletedRentals { get; set; }
-
         public decimal TotalRevenue { get; set; }
+        public List<string> RecentLogLines { get; set; } = new();
     }
 }

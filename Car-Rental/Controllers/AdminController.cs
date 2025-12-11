@@ -11,10 +11,14 @@ namespace Car_Rental.Controllers
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<AdminController> _logger;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(ApplicationDbContext context,IWebHostEnvironment environment,ILogger<AdminController> logger)
         {
             _context = context;
+            _environment = environment;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -41,7 +45,31 @@ namespace Car_Rental.Controllers
                 CompletedRentals = completedRentals,
                 TotalRevenue = totalRevenue
             };
+            try
+            {
+                var logsFolder = Path.Combine(_environment.ContentRootPath, "Logs");
+                if (Directory.Exists(logsFolder))
+                {
+                    var latestLogFile = Directory
+                        .GetFiles(logsFolder, "log-*.txt")
+                        .OrderByDescending(f => f)
+                        .FirstOrDefault();
 
+                    if (!string.IsNullOrEmpty(latestLogFile))
+                    {
+                        var allLines = System.IO.File.ReadAllLines(latestLogFile);
+                        vm.RecentLogLines = allLines
+                            .Reverse()
+                            .Take(10)
+                            .Reverse()
+                            .ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to read recent log lines for admin dashboard.");
+            }
             return View(vm);
         }
     }

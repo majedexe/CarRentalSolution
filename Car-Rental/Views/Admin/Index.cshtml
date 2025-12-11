@@ -8,44 +8,80 @@
 
 <div class="row">
     <div class="col-md-4 mb-3">
-        <div class="card">
+        <div class="card card-elevated h-100">
             <div class="card-header">
-                Cars
+                Fleet
             </div>
             <div class="card-body">
-                <p>Total cars: <strong>@Model.TotalCars</strong></p>
-                <p>Available: <strong>@Model.AvailableCars</strong></p>
-                <p>Rented: <strong>@Model.RentedCars</strong></p>
-                <p>Maintenance: <strong>@Model.MaintenanceCars</strong></p>
+                <div class="stat-label">Total cars</div>
+                <div class="stat-value mb-2">@Model.TotalCars</div>
+
+                <p class="mb-1">Available: <strong>@Model.AvailableCars</strong></p>
+                <p class="mb-1">Rented: <strong>@Model.RentedCars</strong></p>
+                <p class="mb-0">Maintenance: <strong>@Model.MaintenanceCars</strong></p>
             </div>
         </div>
     </div>
 
     <div class="col-md-4 mb-3">
-        <div class="card">
+        <div class="card card-elevated h-100">
             <div class="card-header">
                 Rentals
             </div>
             <div class="card-body">
-                <p>Active rentals: <strong>@Model.ActiveRentals</strong></p>
-                <p>Completed rentals: <strong>@Model.CompletedRentals</strong></p>
+                <div class="stat-label">Active rentals</div>
+                <div class="stat-value mb-2">@Model.ActiveRentals</div>
+
+                <p class="mb-0">
+                    Completed rentals: <strong>@Model.CompletedRentals</strong>
+                </p>
             </div>
         </div>
     </div>
 
     <div class="col-md-4 mb-3">
-        <div class="card">
+        <div class="card card-elevated h-100">
             <div class="card-header">
                 Revenue
             </div>
             <div class="card-body">
-                <p>Total revenue (completed rentals): <strong>@Model.TotalRevenue.ToString("C")</strong></p>
+                <div class="stat-label">Total revenue</div>
+                <div class="stat-value mb-2">@Model.TotalRevenue.ToString("C")</div>
+                <p class="mb-0 text-muted small">
+                    Sum of completed rental prices.
+                </p>
             </div>
         </div>
     </div>
 </div>
 
-<p>
+<div class="row mt-3">
+    <div class="col-md-12">
+        <div class="card card-elevated">
+            <div class="card-header">
+                Recent log entries
+            </div>
+            <div class="card-body">
+                @if (Model.RecentLogLines == null || Model.RecentLogLines.Count == 0)
+                {
+                    <p class="text-muted mb-0">No log entries found yet.</p>
+                }
+                else
+                {
+                    <pre class="small"
+                         style="max-height: 260px; overflow-y: auto; background-color: #0b1120; color: #f9fafb; border-radius: 0.75rem; padding: 1rem;">
+    @foreach (var line in Model.RecentLogLines)
+    {
+        @line
+    }
+                        </pre>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="mt-3">
     <a asp-controller="Cars" asp-action="Index" class="btn btn-primary">Manage Cars</a>
     <a asp-controller="Rentals" asp-action="Index" class="btn btn-secondary ms-2">View Rentals</a>
 </p>

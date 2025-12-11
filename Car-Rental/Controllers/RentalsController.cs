@@ -14,11 +14,13 @@ namespace Car_Rental.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<RentalsController> _logger;
 
-        public RentalsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public RentalsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, ILogger<RentalsController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -137,7 +139,9 @@ namespace Car_Rental.Controllers
             int totalDays = (int)(rental.EndDate.Date - rental.StartDate.Date).TotalDays;
             if (totalDays <= 0) totalDays = 1;
             rental.TotalPrice = totalDays * car.DailyRate;
-
+            _logger.LogInformation(
+             "Rental {RentalId} created for car {CarId} by user {UserId} from {Start} to {End} at price {TotalPrice}",
+             rental.Id, rental.CarId, rental.UserId, rental.StartDate, rental.EndDate, rental.TotalPrice);
             _context.Rentals.Add(rental);
 
             car.Status = CarStatus.Rented;
@@ -196,7 +200,9 @@ namespace Car_Rental.Controllers
 
             var car = rental.Car;
             car.Status = carStatusAfterReturn;
-
+            _logger.LogInformation(
+            "Rental {RentalId} returned; car {CarId} status changed to {CarStatus}",
+            rental.Id, rental.CarId, car.Status);
             _context.Rentals.Update(rental);
             _context.Cars.Update(car);
 
